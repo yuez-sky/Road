@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Css  Animation Demo</title>
+    <style>
+        div {
+            width: 50px;
+            height: 50px;
+        }
+
+        #red {
+            background: red;
+            animation: 3s rotate linear infinite;
+        }
+        
+        @keyframes rotate {
+            from {transform: rotate(0deg);}
+            to {transform: rotate(360deg);}
+        }
+
+        #blue {
+            background: blue;
+            animation: 3s slide-transform linear infinite;
+        }
+ 
+        @keyframes slide-transform {
+            from {transform: translatex(0);}
+            50% {transform: translatex(300px);}
+            to {transform: translatex(0);}
+        }
+    
+        #green {
+            background: green;
+            animation: 3s slide-margin linear infinite;
+        }
+        
+        @keyframes slide-margin {
+            from {margin-left: 0;}
+            50% {margin-left: 100%;}
+            to {margin-left: 0;}
+        }
+
+    </style>
+</head>
+<body>
+   <div>
+        <div id="red"></div>
+        <div id="blue"></div>
+        <div id="green"></div>
+        <button>Clickme</button>
+   </div> 
+   <script>
+       var btn = document.querySelector('button')
+       btn.onclick = function() {
+           var now = +new Date
+           while(new Date - now < 2000) {}
+       }
+   </script>
+</body>
+</html>
