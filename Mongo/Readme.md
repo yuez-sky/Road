@@ -207,8 +207,10 @@ var personSchema = new Schema({
 `new Schema({}, options)`
 
 - autoIndex
+自动索引
 - bufferCommands
 - capped
+某次操作的数量上限
 - collection
 - id
 ```js
@@ -277,12 +279,73 @@ schema.set('toJSON', { getters: true, virtuals: false });
 
 
 ##### Model
-Model 通过Schema创建而来
+
+Model 通过Schema创建而来, 负责创建读取documents
+
 ```js
-var Blog = mongoose.model('Blog', blogSchema);
+var schema = new mongoose.Schema({
+    name: String,
+    age: Number,
+    sex: {
+        type: Number,
+        enum: [1, 2],
+    }
+})
+var Person = mongoose.model('Person', schema)
+
+// create
+Person.create({
+    name: 'zs',
+    age: 1,
+    sex: 2,
+}, function(err, data) {})
+// query
+Person.find({sex: 2}).exec(callback)
+// delete
+Person.deleteOne({ name: 'zs' }, function (err) {})
+// update
+Person.updateOne({name: 'zs'}, { age: 12 }, function(err, res) {})
 ```
 
 ##### Document
+
+Model的实例
 ```js
+// 拿到一个document
+var jack = new Persion({ name: 'Jack', age: 12, sex: 1})
+
+
 ```
+##### Query
+
+查询
+
+- Model.deleteMany()
+- Model.deleteOne()
+- Model.find()
+- Model.findById()
+- Model.findByIdAndDelete()
+- Model.findByIdAndRemove()
+- Model.findByIdAndUpdate()
+- Model.findOne()
+- Model.findOneAndDelete()
+- Model.findOneAndRemove()
+- Model.findOneAndUpdate()
+- Model.replaceOne()
+- Model.updateMany()
+- Model.updateOne()
+
+query不是返回promise, 但是有一个`then`的函数
+
+
+##### Validation
+
+##### Populate
+
+##### Aggregate
+
+##### Middleware
+##### Plugins
+
+
 
