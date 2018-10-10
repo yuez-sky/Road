@@ -341,8 +341,124 @@ query不是返回promise, 但是有一个`then`的函数
 ##### Validation
 
 ##### Populate
+```js
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+
+// person中有story的关联
+// story中有person的关联
+var personSchema = Schema({
+  _id: Schema.Types.ObjectId,
+  name: String,
+  age: Number,
+  stories: [{ type: Schema.Types.ObjectId, ref: 'Story' }]
+});
+
+var storySchema = Schema({
+  author: { type: Schema.Types.ObjectId, ref: 'Person' },
+  title: String,
+  fans: [{ type: Schema.Types.ObjectId, ref: 'Person' }]
+});
+
+var Story = mongoose.model('Story', storySchema);
+var Person = mongoose.model('Person', personSchema);
+```
+保存
+
+```js
+var author = new Person({
+  _id: new mongoose.Types.ObjectId(),
+  name: 'Ian Fleming',
+  age: 50
+});
+
+author.save(function (err) {
+  if (err) return handleError(err);
+
+  var story1 = new Story({
+    title: 'Casino Royale',
+    author: author._id    // assign the _id from the person
+  });
+
+  story1.save(function (err) {
+    if (err) return handleError(err);
+    // thats it!
+  });
+});
+```
+
+populate
+```js
+Story.
+  findOne({ title: 'Casino Royale' }).
+  populate('author').
+  exec(function (err, story) {
+    if (err) return handleError(err);
+    console.log('The author is %s', story.author.name);
+    // prints "The author is Ian Fleming"
+  });
+
+// 可以只选择部分的字段返回
+Story.
+  find(...).
+  populate('author', 'name').
+  exec();
+
+// 可以同时populate多个
+Story.
+  find(...).
+  populate('fans').
+  populate('author').
+  exec();
+
+// 如果对一个字段populate多次，最后一次生效
+Story.
+  find(...).
+  populate('author', 'name').
+  populate('author', 'age').
+  exec();
+
+// populate options
+Story.
+  find(...).
+  populate({
+    path: 'fans',
+    match: { age: { $gte: 21 }},
+    // Explicitly exclude `_id`, see http://bit.ly/2aEfTdB
+    select: 'name -_id',
+    options: { limit: 5 }
+  }).
+  exec();
+
+
+// virtual
+var PersonSchema = new Schema({
+  name: String,
+  band: String
+});
+
+var BandSchema = new Schema({
+  name: String
+});
+BandSchema.virtual('members', {
+  ref: 'Person', // The model to use
+  localField: 'name', // Find people where `localField`
+  foreignField: 'band', // is equal to `foreignField`
+  // If `justOne` is true, 'members' will be a single doc as opposed to
+  // an array. `justOne` is false by default.
+  justOne: false,
+  options: { sort: { name: -1 }, limit: 5 } // Query options, see http://bit.ly/mongoose-query-options
+});
+
+var Person = mongoose.model('Person', PersonSchema);
+var Band = mongoose.model('Band', BandSchema);
+
+Band.find({}).populate('members').exec(function(error, bands) {
+});
+```
 
 ##### Aggregate
+
 
 ##### Middleware
 ##### Plugins
