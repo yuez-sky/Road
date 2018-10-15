@@ -1,0 +1,18 @@
+{
+  "name": "mongo-example",
+  "version": "1.0.0",
+  "description": "examples for mongoose",
+  "main": "basic.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mongoose",
+    "mongo"
+  ],
+  "author": "zysndy",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^5.3.3"
+  }
+}

@@ -1,6 +1,79 @@
 ### Mongo
 NoSql, 非关系型数据库
 
+#### 安装
+```sh
+// mac
+brew install mongo
+```
+
+#### 启动
+```sh
+mkdir data/db
+
+// 指定dbpath
+mongod --dbpath data/db
+```
+
+#### 连接
+```sh
+mongo
+```
+
+#### 操作
+```sh
+# create database
+use database
+# drop database
+use database
+db.dropDatabase()
+
+# create collection
+db.createCollection('collectionname')
+# drop collection
+db.collection.drop()
+# 其实不需要手动创建，当插入数据时会自动创建
+
+
+# insert, update, remove document
+db.collectionname.insert(document)
+db.collection.update(query, update, options)
+db.collection.save(document)
+db.collection.remove(document)
+
+# find
+# $gt(>), $gte(>=), $lt(<), $lte(<=)
+db.collection.find(where)
+# $type 条件操作符, 用来匹配类型
+db.collection.find("name": {$type: 'string'})
+db.collection.find("name": {$type: 2})
+# skip(offset), limit
+# sort 1: asc, -1: desc
+db.collection.find("name": {$type: 2}).limit(1).skip(2).sort({key: 1})
+# index
+db.collection.createIndex(keys, options)
+db.col.createIndex({"title":1,"description":-1})
+```
+
+#### 概念
+1. database
+2. collection
+3. document
+对应到关系型数据库中
+1. database
+2. table
+3. column
+
+```sh
+# 显示所有数据的列表 
+show dbs
+# 连接到一个指定的数据库
+use dbname
+# 查看当前连接的db
+db
+```
+
+
 ### Mongoose
 
 #### 一 安装
@@ -461,7 +534,85 @@ Band.find({}).populate('members').exec(function(error, bands) {
 
 
 ##### Middleware
+中间件，钩子`pre`, `post`，用于schema， 通常会在插件中使用, 主要有4种：
+1. document
+    - validate
+    - save
+    - remove
+    - init
+2. model
+    - insertMany
+3. aggregate
+    - aggregate
+4. query
+    - count
+    - find
+    - findOne
+    - findOneAndRemove
+    - findOneAndUpdate
+    - remove
+    - update
+    - updateOne
+    - updateMany
+
+出现相同的名词, 如`document`的`remove` 和 `query` 的`remove` 
+```js
+// default is for docuemnt remove
+schema.pre('remove', function() {})
+// query remove
+shema.pre('remove', {query: true, document: false}, function() {})
+
+// create will fires save hooks
+
+```
+
+```js
+const schema = new Schema({ .... })
+schema.pre('save', function (next) {
+    // do something
+    next()
+
+    // code after next() will also exec
+})
+
+//  can also use with async/await
+schema.pre('save', async function() {
+    await doSomething()
+    await doSomething()
+})
+
+```
+
+
 ##### Plugins
+插件主要是能够对定义好的Schema进行一些额外的处理, 比如说如果我们需要对所有的schema进行一些处理，我们可以将这个处理方式写称插件，在shema后声明后，对schema应用插件,如果后续有变动，只需要对plugin进行处理即可
+```js
+// defination last
+module.exports = function lastModPlugin(shema, options) {
+    shema.add({ 'lastMod': Date })
+
+    schema.pre('save', function (next) {
+        this.lastMod = new Date()
+        next()
+    })
+
+    if (options) {
+        schema.path('lastMod').index(options)
+    }
+}
+
+// how to use
+const lastModPlugin = require('./lastModPlugin')
+const schema_1 = new Schema({...})
+schema_1.plugin(lastModPlugin, { index: true })
+const schema_2 = new Schema({...})
+schema_2.plugin(lastModPlugin)
+
+// use in global
+const lastModPlugin = require('./lastModPlugin')
+var mongoose = require('mongoose')
+mongoose.plugin(lastModPlugin)
+```
 
 
 
