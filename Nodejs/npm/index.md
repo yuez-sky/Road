@@ -29,7 +29,7 @@ module.exports = translate
 
 #### bin
 很多npm包中，我们都可以看到这种带有提示的命令。
-![help](../images/utol-h.jpg)
+![help](./images/utol-h.jpg)
 这种事通过命令行实现的。在package.json中指定bin文件，能够生成直接运行的命令。
 ```js
 {
@@ -59,7 +59,7 @@ module.exports = function() {
 }
 ```
 
-![help](../images/utol-t.jpg)
+![help](./images/utol-t.jpg)
 可以`version`实现版本提示，通过`options`来实现其他的提示，如`-t`
 
 ### 发布
